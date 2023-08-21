@@ -1,0 +1,90 @@
+<!DOCTYPE html> 
+<html lang="en"> 
+<head> 
+<meta charset="UTF-8"> 
+<meta http-equiv="X-UA-Compatible" content="IE=edge"> 
+<meta var_name="viewport" content="width=device-width, initial-scale=1.0"> 
+<title>Form Data</title> 
+<link rel="stylesheet" type="text/css" href="styles-form-data.css"> 
+
+</head> 
+<body> 
+<h1>Form Data</h1> 
+<form> 
+<label for="var_rollno">Roll number:</label> 
+<output id="var_rollno"></output><br><br> 
+
+<label for="var_name">Name:</label> 
+<output id="var_name"></output><br><br> 
+
+<label for="var_address">Address:</label> 
+<output id="var_address"></output><br><br> 
+
+<label for="var_phone_no">Phone Number:</label> 
+<output id="var_phone_no"></output><br><br> 
+</form> 
+
+<button id="displayDataButton">Display Data</button> 
+<button id="downloadCSVButton">Download as CSV</button> 
+<input type="button" value="Display all Data" onclick="displayData();"> 
+
+<div id="dataContainer"></div> 
+
+<script> 
+var params = new URLSearchParams(window.location.search); 
+document.getElementById("var_rollno").innerHTML = params.get("var_rollno"); 
+document.getElementById("var_name").innerHTML = params.get("var_name"); 
+document.getElementById("var_address").innerHTML = params.get("var_address"); 
+document.getElementById("var_phone_no").innerHTML = params.get("var_phone_no"); 
+
+var allData = []; 
+var storedFormDataArray = localStorage.getItem("formDataArray"); 
+
+if (storedFormDataArray) { 
+allData = JSON.parse(storedFormDataArray); 
+
+} 
+
+document.getElementById("displayDataButton").addEventListener("click", function() { 
+
+var dataContainer = document.getElementById("dataContainer"); 
+dataContainer.innerHTML = ""; 
+allData.forEach(function(data) { 
+dataContainer.innerHTML += "<p>" + JSON.stringify(data) + "</p>"; 
+}); 
+}); 
+
+document.getElementById("downloadCSVButton").addEventListener("click", function() { 
+
+var csvContent = "data:text/csv;charset=utf-8,"; 
+allData.forEach(function(data) { 
+csvContent += Object.values(data).join(",") + "\n"; 
+}); 
+var encodedUri = encodeURI(csvContent); 
+var link = document.createElement("a"); 
+link.setAttribute("href", encodedUri); 
+link.setAttribute("download", "form-data.csv"); 
+document.body.appendChild(link); 
+link.click(); 
+}); 
+
+function displayData() { 
+
+var data = localStorage.getItem("formDataArray"); 
+
+
+var dataWindow = window.open("", "Data Window", "width=300, height=300"); 
+dataWindow.document.write("<table border='1'>"); 
+dataWindow.document.write("<tr><th>var_rollno</th><th>var_name</th><th>var_address</th><th>var_phone_no</th></tr>"); 
+allData.forEach(function (item) { 
+var var_rollno = item["var_rollno"]; 
+var var_name = item["var_name"]; 
+var var_address = item["var_address"]; 
+var var_phone_no = item["var_phone_no"]; 
+dataWindow.document.write("<tr><td>"+ var_rollno + "</td><td>" + var_name + "</td><td>" + var_address + "</td><td>" + var_phone_no + "</td></tr>"); 
+}); 
+dataWindow.document.write("</table>"); 
+} 
+</script> 
+</body> 
+</html> 
